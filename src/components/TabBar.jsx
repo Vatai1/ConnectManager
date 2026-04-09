@@ -17,7 +17,7 @@ export default function TabBar({ tabs, onDisconnect, statusMessage, onError }) {
     return (
       <div className="tab-bar-empty">
         <div className="empty-state-large">
-          <p>Нет активных подключений</p>
+          <p>⚡ Нет активных подключений</p>
           <p className="hint">Дважды кликните по сессии слева для подключения</p>
         </div>
         <div className="status-bar">{statusMessage}</div>

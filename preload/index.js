@@ -74,5 +74,17 @@ contextBridge.exposeInMainWorld('api', {
 
   showError: (message, stack) => ipcRenderer.invoke('show-error', { message, stack }),
 
-  openCredentialsWindow: () => ipcRenderer.invoke('open-credentials-window')
+  openCredentialsWindow: () => ipcRenderer.invoke('open-credentials-window'),
+  openSettingsWindow: () => ipcRenderer.invoke('open-settings-window'),
+
+  settings: {
+    get: (key, defaultValue) => ipcRenderer.invoke('settings:get', key, defaultValue),
+    set: (key, value) => ipcRenderer.invoke('settings:set', key, value),
+    getAll: () => ipcRenderer.invoke('settings:getAll'),
+    onChange: (callback) => {
+      const handler = (_event, settings) => callback(settings)
+      ipcRenderer.on('settings:changed', handler)
+      return () => ipcRenderer.removeListener('settings:changed', handler)
+    }
+  }
 })

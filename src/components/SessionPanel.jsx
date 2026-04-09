@@ -287,8 +287,8 @@ export default function SessionPanel({ sessions, folders, credentials, onRefresh
   return (
     <div className="session-panel" onClick={closeCtx}>
       <div className="session-panel-actions">
-        <button className="btn btn-small" onClick={() => { setNewFolderParent('root'); setNewFolderName('') }}>📁</button>
-        <button className="btn btn-small" onClick={() => handleAddSession(null)}>+ Сессия</button>
+        <button className="btn btn-small" onClick={() => { setNewFolderParent('root'); setNewFolderName('') }} title="Новая папка">📁 Папка</button>
+        <button className="btn btn-small btn-primary" onClick={() => handleAddSession(null)}>+ Сессия</button>
       </div>
 
       <input
@@ -330,7 +330,7 @@ export default function SessionPanel({ sessions, folders, credentials, onRefresh
         )}
 
         {tree.children.length === 0 && tree.sessions.length === 0 && (
-          <div className="empty-state">Нет сессий. ПКМ для создания.</div>
+          <div className="empty-state">Нет сессий. Нажмите ПКМ для создания.</div>
         )}
       </div>
 

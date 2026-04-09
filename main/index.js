@@ -6,16 +6,28 @@ const { registerSSHIPC } = require('./ipc/ssh')
 const { registerSFTPIPC } = require('./ipc/sftp')
 const { registerCredentialsIPC } = require('./ipc/credentials')
 const { registerFoldersIPC } = require('./ipc/folders')
+const { registerSettingsIPC } = require('./ipc/settings')
+const { getThemeColors, loadSavedTheme } = require('./theme')
 
 let mainWindow = null
 let credentialsWindow = null
+let settingsWindow = null
 
 function createWindow() {
+  const t = getThemeColors(loadSavedTheme())
+
   mainWindow = new BrowserWindow({
     width: 1200,
     height: 750,
     minWidth: 900,
     minHeight: 600,
+    backgroundColor: t.bg,
+    titleBarStyle: 'hidden',
+    titleBarOverlay: {
+      color: t.overlayColor,
+      symbolColor: t.symbolColor,
+      height: 36
+    },
     webPreferences: {
       preload: path.join(__dirname, '..', 'preload', 'index.js'),
       contextIsolation: true,
@@ -42,6 +54,9 @@ function openCredentialsWindow() {
     return
   }
 
+  const theme = database.getSetting('theme', 'dark')
+  const t = getThemeColors(theme)
+
   credentialsWindow = new BrowserWindow({
     width: 600,
     height: 550,
@@ -49,6 +64,13 @@ function openCredentialsWindow() {
     minHeight: 400,
     parent: mainWindow,
     modal: false,
+    backgroundColor: t.bg,
+    titleBarStyle: 'hidden',
+    titleBarOverlay: {
+      color: t.overlayColor,
+      symbolColor: t.symbolColor,
+      height: 36
+    },
     webPreferences: {
       preload: path.join(__dirname, '..', 'preload', 'index.js'),
       contextIsolation: true,
@@ -75,15 +97,70 @@ function openCredentialsWindow() {
   }
 }
 
+function openSettingsWindow() {
+  if (settingsWindow && !settingsWindow.isDestroyed()) {
+    settingsWindow.focus()
+    return
+  }
+
+  const theme = database.getSetting('theme', 'dark')
+  const t = getThemeColors(theme)
+
+  settingsWindow = new BrowserWindow({
+    width: 500,
+    height: 480,
+    minWidth: 400,
+    minHeight: 350,
+    parent: mainWindow,
+    modal: false,
+    backgroundColor: t.bg,
+    titleBarStyle: 'hidden',
+    titleBarOverlay: {
+      color: t.overlayColor,
+      symbolColor: t.symbolColor,
+      height: 36
+    },
+    webPreferences: {
+      preload: path.join(__dirname, '..', 'preload', 'index.js'),
+      contextIsolation: true,
+      nodeIntegration: false
+    },
+    title: 'Настройки',
+    show: false
+  })
+
+  settingsWindow.on('ready-to-show', () => {
+    settingsWindow.show()
+  })
+
+  settingsWindow.on('closed', () => {
+    settingsWindow = null
+  })
+
+  if (process.env.ELECTRON_RENDERER_URL) {
+    settingsWindow.loadURL(process.env.ELECTRON_RENDERER_URL + '?window=settings')
+  } else {
+    settingsWindow.loadFile(path.join(__dirname, '..', 'out', 'renderer', 'index.html'), {
+      query: { window: 'settings' }
+    })
+  }
+}
+
 app.whenReady().then(() => {
   registerSessionIPC()
   registerSSHIPC()
   registerSFTPIPC()
   registerCredentialsIPC()
   registerFoldersIPC()
+  registerSettingsIPC()
 
   ipcMain.handle('open-credentials-window', () => {
     openCredentialsWindow()
+    return true
+  })
+
+  ipcMain.handle('open-settings-window', () => {
+    openSettingsWindow()
     return true
   })
 

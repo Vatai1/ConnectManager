@@ -383,9 +383,23 @@ function dbExists() {
   return fs.existsSync(DB_PATH)
 }
 
+function getSetting(key, defaultValue) {
+  const row = execGet("SELECT value FROM meta WHERE key = ?", ['setting_' + key])
+  if (row && row.value != null) {
+    try { return JSON.parse(row.value) } catch { return row.value }
+  }
+  return defaultValue
+}
+
+function setSetting(key, value) {
+  const val = JSON.stringify(value)
+  db.run("INSERT OR REPLACE INTO meta (key, value) VALUES (?, ?)", ['setting_' + key, val])
+  save()
+}
+
 module.exports = {
   init, getAllSessions, getSession, addSession, updateSession, deleteSession,
   getAllFolders, addFolder, updateFolder, deleteFolder, moveItem,
   getAllCredentials, getCredential, addCredential, updateCredential, deleteCredential,
-  close, dbExists
+  close, dbExists, getSetting, setSetting
 }

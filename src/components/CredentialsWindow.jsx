@@ -59,7 +59,7 @@ export default function CredentialsWindow() {
   return (
     <div className="cw-layout">
       <div className="cw-header">
-        <h2>Профили кредов</h2>
+        <h2>🔑 Профили кредов</h2>
         <button className="btn btn-primary" onClick={handleAdd}>+ Новый профиль</button>
       </div>
 

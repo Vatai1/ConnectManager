@@ -36,7 +36,7 @@ export default function MasterPassword({ onAuth, onError }) {
   return (
     <div className="master-password-overlay">
       <div className="master-password-dialog">
-        <h2>{isNew ? 'Установить мастер-пароль' : 'Ввести мастер-пароль'}</h2>
+        <h2>{isNew ? '🔐 Установить мастер-пароль' : '🔐 Ввести мастер-пароль'}</h2>
         <form onSubmit={handleSubmit}>
           <div className="form-group">
             <label>Пароль</label>

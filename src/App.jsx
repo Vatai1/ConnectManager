@@ -14,6 +14,15 @@ export default function App() {
   const [folders, setFolders] = useState([])
   const [tabs, setTabs] = useState({})
   const [statusMessage, setStatusMessage] = useState('Готово')
+  const [theme, setTheme] = useState('dark')
+
+  useEffect(() => {
+    api.settings.get('theme', 'dark').then(setTheme).catch(() => {})
+  }, [])
+
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme)
+  }, [theme])
 
   const loadSessions = useCallback(async () => {
     try {
@@ -77,8 +86,13 @@ export default function App() {
       setStatusMessage('Соединение разорвано')
     })
 
+    const unsubSettings = api.settings.onChange((changes) => {
+      if (changes.theme !== undefined) setTheme(changes.theme)
+    })
+
     return () => {
       unsubDisconnect()
+      unsubSettings()
     }
   }, [authenticated])
 
@@ -113,6 +127,10 @@ export default function App() {
     api.openCredentialsWindow()
   }
 
+  const openSettings = () => {
+    api.openSettingsWindow()
+  }
+
   if (!authenticated) {
     return (
       <MasterPassword
@@ -129,10 +147,15 @@ export default function App() {
       <div className="app-layout">
         <div className="sidebar">
           <div className="session-panel-header">
-            <h3>Сессии</h3>
-            <button className="btn btn-small" onClick={openCredentials} title="Профили кредов">
-              🔑 Креды
-            </button>
+            <h3><span className="header-icon">⚡</span> Сессии</h3>
+            <div className="header-actions">
+              <button className="btn btn-small" onClick={openCredentials} title="Профили кредов">
+                🔑 Креды
+              </button>
+              <button className="btn btn-small" onClick={openSettings} title="Настройки">
+                ⚙️
+              </button>
+            </div>
           </div>
           <SessionPanel
             sessions={sessions}

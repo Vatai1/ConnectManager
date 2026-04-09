@@ -18,7 +18,9 @@ export default defineConfig({
           'ipc/ssh': resolve(__dirname, 'main/ipc/ssh.js'),
           'ipc/sftp': resolve(__dirname, 'main/ipc/sftp.js'),
           'ipc/credentials': resolve(__dirname, 'main/ipc/credentials.js'),
-          'ipc/folders': resolve(__dirname, 'main/ipc/folders.js')
+          'ipc/folders': resolve(__dirname, 'main/ipc/folders.js'),
+          'ipc/settings': resolve(__dirname, 'main/ipc/settings.js'),
+          theme: resolve(__dirname, 'main/theme.js')
         }
       }
     }
